@@ -153,7 +153,7 @@ namespace TShockAPI
 		{
 			TSPlayer.All.SendMessage(msg, red, green, blue);
 			TSPlayer.Server.SendMessage(msg, red, green, blue);
-			TShock.Log.Info(string.Format("Broadcast: {0}", msg));
+			TShock.Log.Info(string.Format("服务器广播: {0}", msg));
 		}
 
 		/// <summary>>Broadcast - Broadcasts a message to all players on the server, as well as the server console, and the logs.</summary>
@@ -176,7 +176,7 @@ namespace TShockAPI
 		{
 			TSPlayer.All.SendMessageFromPlayer(msg, red, green, blue, ply);
 			TSPlayer.Server.SendMessage(Main.player[ply].name + ": " + msg, red, green, blue);
-			TShock.Log.Info(string.Format("Broadcast: {0}", Main.player[ply].name + ": " + msg));
+			TShock.Log.Info(string.Format("服务器广播: {0}", Main.player[ply].name + ": " + msg));
 		}
 
 		/// <summary>
@@ -343,11 +343,14 @@ namespace TShockAPI
 			for (int i = -48; i < Main.maxItemTypes; i++)
 			{
 				item.netDefaults(i);
+				var ntl = Touhou.Terraria语言包.物品名(item.type).ToLower();
 				if (String.IsNullOrWhiteSpace(item.name))
 					continue;
 				if (item.name.ToLower() == nameLower)
 					return new List<Item> { item };
-				if (item.name.ToLower().StartsWith(nameLower))
+				if (ntl == nameLower)
+					return new List<Item> { item };
+				if (item.name.ToLower().StartsWith(nameLower) || ntl.StartsWith(nameLower))
 					found.Add(item.Clone());
 			}
 			return found;
@@ -415,9 +418,12 @@ namespace TShockAPI
 			for (int i = -17; i < Main.maxNPCTypes; i++)
 			{
 				npc.netDefaults(i);
+				var ntl = Touhou.Terraria语言包.怪物名(i).ToLower();
 				if (npc.name.ToLower() == nameLower)
 					return new List<NPC> { npc };
-				if (npc.name.ToLower().StartsWith(nameLower))
+				if (ntl == nameLower)
+					return new List<NPC> { npc };
+				if (npc.name.ToLower().StartsWith(nameLower) || (ntl.StartsWith(nameLower)))
 					found.Add((NPC)npc.Clone());
 			}
 			return found;
@@ -493,9 +499,12 @@ namespace TShockAPI
 			{
 				item.prefix = (byte)i;
 				string prefixName = item.AffixName().Trim().ToLower();
+				string cnp = Touhou.Terraria语言包.前缀(i);
 				if (prefixName == lowerName)
 					return new List<int>() { i };
-				else if (prefixName.StartsWith(lowerName)) // Partial match
+				if (cnp == lowerName)
+					return new List<int>() { i };
+				else if (prefixName.StartsWith(lowerName) || cnp.StartsWith(lowerName)) // Partial match
 					found.Add(i);
 			}
 			return found;
@@ -536,7 +545,7 @@ namespace TShockAPI
 		/// </summary>
 		/// <param name="save">bool perform a world save before stop (default: true)</param>
 		/// <param name="reason">string reason (default: "Server shutting down!")</param>
-		public void StopServer(bool save = true, string reason = "Server shutting down!")
+		public void StopServer(bool save = true, string reason = "服务器关闭!")
 		{
 			ForceKickAll(reason);
 			if (save)
@@ -558,7 +567,7 @@ namespace TShockAPI
 		/// </summary>
 		/// <param name="save">bool perform a world save before stop (default: true)</param>
 		/// <param name="reason">string reason (default: "Server shutting down!")</param>
-		public void RestartServer(bool save = true, string reason = "Server shutting down!")
+		public void RestartServer(bool save = true, string reason = "服务器关闭!")
 		{
 			if (Main.ServerSideCharacter)
 				foreach (TSPlayer player in TShock.Players)
@@ -616,15 +625,14 @@ namespace TShockAPI
 				player.SilentKickInProgress = silent;
 				if (player.IsLoggedIn && saveSSI)
 					player.SaveServerCharacter();
-				player.Disconnect(string.Format("Kicked: {0}", reason));
-				TShock.Log.ConsoleInfo(string.Format("Kicked {0} for : '{1}'", playerName, reason));
-				string verb = force ? "force " : "";
+				player.Disconnect(string.Format("踢出: {0}", reason));
+				TShock.Log.ConsoleInfo(string.Format("踢出了{0}, 原因是'{1}'", playerName, reason));
 				if (!silent)
 				{
 					if (string.IsNullOrWhiteSpace(adminUserName))
-						Broadcast(string.Format("{0} was {1}kicked for '{2}'", playerName, verb, reason.ToLower()), Color.Green);
+						Broadcast(string.Format("{0}被踢出, 原因是'{1}'", playerName, reason.ToLower()), Color.Green);
 					else
-						Broadcast(string.Format("{0} {1}kicked {2} for '{3}'", adminUserName, verb, playerName, reason.ToLower()), Color.Green);
+						Broadcast(string.Format("{0}踢出了{1}, 原因是'{2}'", adminUserName, playerName, reason.ToLower()), Color.Green);
 				}
 				return true;
 			}
@@ -648,12 +656,11 @@ namespace TShockAPI
 				string uuid = player.UUID;
 				string playerName = player.Name;
 				TShock.Bans.AddBan(ip, playerName, uuid, reason, false, adminUserName);
-				player.Disconnect(string.Format("Banned: {0}", reason));
-				string verb = force ? "force " : "";
+				player.Disconnect(string.Format("封禁: {0}", reason));
 				if (string.IsNullOrWhiteSpace(adminUserName))
-					TSPlayer.All.SendInfoMessage("{0} was {1}banned for '{2}'.", playerName, verb, reason);
+					TSPlayer.All.SendInfoMessage("{0}被封禁, 原因是'{1}'.", playerName, reason);
 				else
-					TSPlayer.All.SendInfoMessage("{0} {1}banned {2} for '{3}'.", adminUserName, verb, playerName, reason);
+					TSPlayer.All.SendInfoMessage("{0}封禁了{1}, 原因是'{2}'.", adminUserName, playerName, reason);
 				return true;
 			}
 			return false;
@@ -768,8 +775,8 @@ namespace TShockAPI
 		/// <param name="matches">An enumerable list with the matches</param>
 		public void SendMultipleMatchError(TSPlayer ply, IEnumerable<object> matches)
 		{
-			ply.SendErrorMessage("More than one match found: {0}", string.Join(",", matches));
-			ply.SendErrorMessage("Use \"my query\" for items with spaces");
+			ply.SendErrorMessage("找到了多个匹配项目: {0}", string.Join(",", matches));
+			ply.SendErrorMessage("使用 \"双引号\" 来表示名字中带有空格的项目.");
 		}
 
 		/// <summary>

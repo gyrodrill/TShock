@@ -251,7 +251,7 @@ namespace TShockAPI
 					termString = term.ToString();
 				}
 
-				if (lineBuilder.Length + termString.Length + separator.Length < maxCharsPerLine)
+				if (Encoding.Default.GetByteCount(lineBuilder.ToString()) + Encoding.Default.GetByteCount(termString) + Encoding.Default.GetByteCount(separator) < maxCharsPerLine)
 				{
 					lineBuilder.Append(termString).Append(separator);
 				}

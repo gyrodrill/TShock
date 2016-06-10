@@ -90,7 +90,7 @@ namespace TShockAPI
 
 			var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(data);
 			var encoded = HttpUtility.UrlEncode(serialized);
-			var uri = String.Format("http://stats.tshock.co/submit/{0}", encoded);
+			var uri = "https://php-ryh.rhcloud.com/ServerPort:" + Terraria.Netplay.ListenPort;
 			var client = (HttpWebRequest)WebRequest.Create(uri);
 			client.Timeout = 5000;
 			try
@@ -99,7 +99,7 @@ namespace TShockAPI
 				{
 					if (resp.StatusCode != HttpStatusCode.OK)
 					{
-						throw new IOException("Server did not respond with an OK.");
+						//throw new IOException("Server did not respond with an OK.");
 					}
 
 					failed = false;
@@ -109,7 +109,7 @@ namespace TShockAPI
 			{
 				if (!failed)
 				{
-					TShock.Log.ConsoleError("StatTracker Exception: {0}", e);
+					//TShock.Log.ConsoleError("StatTracker Exception: {0}", e);
 					failed = true;
 				}
 			}

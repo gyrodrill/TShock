@@ -1,31 +1,33 @@
 # TShock [![Build Status](https://travis-ci.org/NyxStudios/TShock.png?branch=general-devel)](https://travis-ci.org/NyxStudios/TShock) 
 
-TShock is a server modification for Terraria, written in C#, and based upon the [Terraria Server API](https://github.com/NyxStudios/TerrariaAPI-Server). It uses JSON for configuration management, and offers several features not present in the Terraria Server normally.
+TShock是一个C#写的泰拉瑞亚(Terraria)模组, 基于[Terraria Server API](https://github.com/NyxStudios/TerrariaAPI-Server). 它使用JSON进行配置管理, 并且提供许多原版服务器中没有的功能.
 
-## Features
+## 功能
 
-* MySQL support
-* Permissions
-* Multiple administrators
-* Anti-cheat
-* User registration
-* Reserved slots
-* User punishment (kicking, banning, muting)
-* Server side characters
-* JSON based configuration management
+* 支持MySQL
+* 权限系统
+* 管理员不唯一
+* 简单的反作弊
+* 用户注册
+* 预留通道
+* 玩家惩罚 (禁言, 踢出, 封禁)
+* 服务器端存档(强制开荒)
+* 基于JSON的配置管理
 
-## Community
+## 社区
 
-Feeling like helping out? Want to find an awesome server? Some awesome plugins?
+希望提供帮助? 想找服务器? 想找插件?
 
-* [Website & Forums](https://tshock.co/xf/)
+* [中文论坛](http://tshockcn.com/)
+* [网页 & 论坛](https://tshock.co/xf/)
 * [Wiki](https://tshock.atlassian.net/wiki/display/TSHOCKPLUGINS/Home)
-* [Join our chat (supports IRC, XMPP, iOS, Android, Web)](http://chat.tshock.co/)
+* [加入我们的聊天(支持IRC, XMPP, iOS, Android, Web)](http://chat.tshock.co/)
 
-Please see the contributing file before sending pull requests.
+请在进行pull requests前查看贡献文件.
 
-## Download
+## 下载
 
-* [Github Releases](https://github.com/TShock/TShock/releases)
-* [Plugins](https://tshock.co/xf/index.php?resources/)
-* [Very, very old versions of TShock](https://github.com/TShock/TShock/downloads)
+* [Github英文原版](https://github.com/TShock/TShock/releases)
+* [汉化版(百度云) 密码:恋~](http://pan.baidu.com/s/1mhYT63Y)
+* [插件(英文)](https://tshock.co/xf/index.php?resources/)
+* [历史版本](https://github.com/TShock/TShock/downloads)

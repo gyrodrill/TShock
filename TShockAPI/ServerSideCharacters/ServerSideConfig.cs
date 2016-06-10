@@ -28,22 +28,22 @@ namespace TShockAPI.ServerSideCharacters
 {
 	public class ServerSideConfig
 	{
-		[Description("Enable server side characters, This stops the client from saving character data! EXPERIMENTAL!!!!!")]
+		[Description("是否开启服务器端存档(强制开荒).")]
 		public bool Enabled = false;
 
-		[Description("How often SSC should save, in minutes.")]
+		[Description("玩家存档保存间隔, 单位是分钟.")]
 		public int ServerSideCharacterSave = 5;
 
-		[Description("Time, in milliseconds, to disallow discarding items after logging in when ServerSideInventory is ON.")]
-		public int LogonDiscardThreshold = 250;
+		[Description("开启强制开荒后, 玩家刚登陆无法丢物品的时间长度, 单位毫秒.")]
+		public int LogonDiscardThreshold = 1000;
 
-		[Description("The starting default health for new SSC.")] 
+		[Description("初始血量.")] 
 		public int StartingHealth = 100;
 
-		[Description("The starting default mana for new SSC.")] 
+		[Description("初始魔法.")] 
 		public int StartingMana = 20;
 
-		[Description("The starting default inventory for new SSC.")] 
+		[Description("初始物品.")] 
 		public List<NetItem> StartingInventory = new List<NetItem>();
 
 		public static ServerSideConfig Read(string path)
@@ -87,13 +87,13 @@ namespace TShockAPI.ServerSideCharacters
 				var def = field.GetValue(defaults);
 
 				sb.AppendLine("{0}  ".SFormat(name));
-				sb.AppendLine("Type: {0}  ".SFormat(type));
-				sb.AppendLine("Description: {0}  ".SFormat(desc));
-				sb.AppendLine("Default: \"{0}\"  ".SFormat(def));
+				sb.AppendLine("类型: {0}  ".SFormat(type));
+				sb.AppendLine("描述: {0}  ".SFormat(desc));
+				sb.AppendLine("默认: \"{0}\"  ".SFormat(def));
 				sb.AppendLine();
 			}
 
-			File.WriteAllText("ServerSideConfigDescriptions.txt", sb.ToString());
+			File.WriteAllText("SSCConfig介绍.txt", sb.ToString());
 		}
 	}
 }

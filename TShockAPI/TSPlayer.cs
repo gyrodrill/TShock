@@ -1087,11 +1087,11 @@ namespace TShockAPI
 					{
 						if (flags.HasFlag(DisableFlags.WriteToLog))
 						{
-							TShock.Log.ConsoleInfo("Player {0} has been disabled for {1}.", Name, reason);
+							TShock.Log.ConsoleInfo("玩家{0}因{1}而被冻结.", Name, reason);
 						}
 						else
 						{
-							Server.SendInfoMessage("Player {0} has been disabled for {1}.", Name, reason);
+							Server.SendInfoMessage("玩家{0}因{1}而被冻结.", Name, reason);
 						}
 					}
 
@@ -1104,6 +1104,26 @@ namespace TShockAPI
 			 * in release builds.  Use a conditional call instead.
 			 */
 			LogStackFrame();
+		}
+
+		public void DisablePlayer(string Reason)
+		{
+			this.SendErrorMessage(Reason);
+			LastThreat = DateTime.UtcNow;
+			SetBuff(BuffID.Frozen, 330, true);
+			SetBuff(BuffID.Stoned, 330, true);
+			SetBuff(BuffID.Webbed, 330, true);
+			if (ActiveChest != -1)
+			{
+				ActiveChest = -1;
+				SendData(PacketTypes.ChestOpen, "", -1);
+			}
+			if ((DateTime.UtcNow - LastDisableNotification).TotalMilliseconds > 5000)
+			{
+				TShock.Log.ConsoleInfo("玩家{0}因{1}而被冻结.", Name, Reason);
+				Server.SendInfoMessage("玩家{0}因{1}而被冻结.", Name, Reason);
+				LastDisableNotification = DateTime.UtcNow;
+			}
 		}
 
 		[Conditional("DEBUG")]

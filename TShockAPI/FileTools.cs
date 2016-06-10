@@ -99,7 +99,7 @@ namespace TShockAPI
 				Directory.CreateDirectory(TShock.SavePath);
 			}
 
-			CreateIfNot(RulesPath, "Respect the admins!\nDon't use TNT!");
+			CreateIfNot(RulesPath, "尊重管理员!\n不要使用TNT!");
 			CreateIfNot(MotdPath, MotdFormat);
 						
 			CreateIfNot(WhitelistPath);
@@ -109,6 +109,16 @@ namespace TShockAPI
 				// Add all the missing config properties in the json file
 			}
 			TShock.Config.Write(ConfigPath);
+			ConfigFile.DumpDescriptions();
+			Permissions.DumpDescriptions();
+			ServerSideConfig.DumpDescriptions();
+			if (TShock.Config.WorldSaveInTShockFolder)
+			{
+				Terraria.Main.SavePath = TShock.SavePath;
+				Terraria.Main.WorldPath = "Worlds";
+				Directory.CreateDirectory(Terraria.Main.WorldPath);
+			}
+			Terraria.Lang.mp[4] = TShock.Config.版本不同提示语;
 
 			if (File.Exists(ServerSideCharacterConfigPath))
 			{
