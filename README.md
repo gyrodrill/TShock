@@ -28,6 +28,6 @@ TShock是一个C#写的泰拉瑞亚(Terraria)模组, 基于[Terraria Server API]
 ## 下载
 
 * [Github英文原版](https://github.com/TShock/TShock/releases)
-* [汉化版(百度云) 密码:恋~](http://pan.baidu.com/s/1mhYT63Y)
+* [汉化版(百度云) 密码:恋~](http://pan.baidu.com/s/1nu63tod)
 * [插件(英文)](https://tshock.co/xf/index.php?resources/)
 * [历史版本](https://github.com/TShock/TShock/downloads)
