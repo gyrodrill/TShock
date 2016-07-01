@@ -1,4 +1,4 @@
-﻿/*
+/*
 TShock, a server mod for Terraria
 Copyright (C) 2011-2015 Nyx Studios (fka. The TShock Team)
 
