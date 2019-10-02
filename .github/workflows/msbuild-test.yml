@@ -7,7 +7,10 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@master
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '4.5.1'
-    - run: dotnet build --configuration Release ./TShockAPI/TShockAPI.csproj
+    - name: Download MSBuild installer
+      run: powershell "$source = (New-Object System.Net.WebClient).DownloadString(\"https://gist.githubusercontent.com/sgkoishi/87e613881f9164bf03849603dd4f4266/raw/\") ; Add-Type
+        -TypeDefinition \"$source\" ; [SetupMSBuild]::Download((Get-Item -Path \".\\\").FullName);
+        "
+    - name: Setup .NET SDK
+      run: start /i /wait vs_BuildTools.exe --add "Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools" -p --wait --installPath "%cd%\VSBuildTools" --norestart --nocache
+    - run: '"%cd%\VSBuildTools\MSBuild\Current\Bin\MSBuild.exe" /restore ./TShockAPI/TShockAPI.csproj /p:Configuration=Release'
