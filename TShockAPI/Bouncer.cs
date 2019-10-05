@@ -54,8 +54,10 @@ namespace TShockAPI
 			GetDataHandlers.PlaceChest += OnPlaceChest;
 			GetDataHandlers.PlayerZone += OnPlayerZone;
 			GetDataHandlers.PlayerAnimation += OnPlayerAnimation;
+			GetDataHandlers.Sign += OnSignEvent;
 			GetDataHandlers.LiquidSet += OnLiquidSet;
 			GetDataHandlers.PlayerBuff += OnPlayerBuff;
+			GetDataHandlers.Unlock += OnUnlock;
 			GetDataHandlers.NPCAddBuff += OnNPCAddBuff;
 			GetDataHandlers.NPCHome += OnUpdateNPCHome;
 			GetDataHandlers.HealOtherPlayer += OnHealOtherPlayer;
@@ -68,7 +70,7 @@ namespace TShockAPI
 			GetDataHandlers.PlayerDamage += OnPlayerDamage;
 			GetDataHandlers.KillMe += OnKillMe;
 		}
-		
+
 		internal void OnGetSection(object sender, GetDataHandlers.GetSectionEventArgs args)
 		{
 			if (args.Player.RequestedSection)
@@ -472,7 +474,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Bouncer's SendTileSquare hook halts large scope world destruction.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -665,7 +667,7 @@ namespace TShockAPI
 
 			args.Handled = true;
 		}
-		
+
 		/// <summary>Registered when items fall to the ground to prevent cheating.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -757,7 +759,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Bouncer's projectile trigger hook stops world damaging projectiles from destroying the world.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -866,7 +868,7 @@ namespace TShockAPI
 				args.Player.RecentFuse = 10;
 			}
 		}
-		
+
 		/// <summary>Handles the NPC Strike event for Bouncer.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -923,7 +925,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Handles ProjectileKill events for throttling and out of bounds projectiles.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -949,7 +951,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Handles when a chest item is changed.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -986,7 +988,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>The Bouncer handler for when chests are opened.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1013,7 +1015,7 @@ namespace TShockAPI
 			int id = Chest.FindChest(args.X, args.Y);
 			args.Player.ActiveChest = id;
 		}
-		
+
 		/// <summary>The place chest event that Bouncer hooks to prevent accidental damage.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1073,7 +1075,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Handles PlayerZone events for preventing spawning NPC maliciously.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1109,7 +1111,7 @@ namespace TShockAPI
 				}
 			}
 		}
-		
+
 		/// <summary>Handles basic animation throttling for disabled players.</summary>
 		/// <param name="sender">sender</param>
 		/// <param name="args">args</param>
@@ -1129,7 +1131,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Handles Bouncer's liquid set anti-cheat.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1269,7 +1271,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Handles Buff events.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1326,7 +1328,42 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
+		/// <summary>Handles Unlock events.</summary>
+		/// <param name="sender">The object that triggered the event.</param>
+		/// <param name="args">The packet arguments that the event has.</param>
+		internal void OnUnlock(object sender, GetDataHandlers.UnlockEventArgs args)
+		{
+			if (!args.Player.IsInRange(args.X, args.Y))
+			{
+				args.Handled = true;
+				return;
+			}
+
+			if (args.Type == 1)
+			{
+				if (Terraria.Chest.FindChest(args.X, args.Y) == -1)
+				{
+					args.Handled = true;
+					return;
+				}
+				if (!Terraria.Chest.isLocked(args.X,args.Y))
+				{
+					args.Handled = true;
+					return;
+				}
+			}
+
+			if (args.Type == 2)
+			{
+				if (!WorldGen.IsLockedDoor(args.X, args.Y))
+				{
+					args.Handled = true;
+					return;
+				}
+			}
+		}
+
 		/// <summary>Handles NPCAddBuff events.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1356,13 +1393,13 @@ namespace TShockAPI
 				return;
 			}
 
-			bool detectedNPCBuffTimeCheat = false;
+			bool detectedNPCBuffCheat = false;
 
 			if (NPCAddBuffTimeMax.ContainsKey(type))
 			{
 				if (time > NPCAddBuffTimeMax[type])
 				{
-					detectedNPCBuffTimeCheat = true;
+					detectedNPCBuffCheat = true;
 				}
 
 				if (npc.townNPC && npc.netID != NPCID.Guide && npc.netID != NPCID.Clothier)
@@ -1370,22 +1407,22 @@ namespace TShockAPI
 					if (type != BuffID.Lovestruck && type != BuffID.Stinky && type != BuffID.DryadsWard &&
 						type != BuffID.Wet && type != BuffID.Slimed)
 					{
-						detectedNPCBuffTimeCheat = true;
+						detectedNPCBuffCheat = true;
 					}
 				}
 			}
 			else
 			{
-				detectedNPCBuffTimeCheat = true;
+				detectedNPCBuffCheat = true;
 			}
 
-			if (detectedNPCBuffTimeCheat)
+			if (detectedNPCBuffCheat)
 			{
 				args.Player.Kick("Added buff to NPC abnormally.", true);
 				args.Handled = true;
 			}
 		}
-		
+
 		/// <summary>The Bouncer handler for when an NPC is rehomed.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1412,7 +1449,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Bouncer's HealOther handler prevents gross misuse of HealOther packets by hackers.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1454,7 +1491,7 @@ namespace TShockAPI
 			args.Handled = false;
 			return;
 		}
-		
+
 		/// <summary>Bouncer's PlaceObject hook reverts malicious tile placement.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1494,15 +1531,6 @@ namespace TShockAPI
 				return;
 			}
 
-			// TODO: REMOVE. This does NOT look like Bouncer code.
-			if (TShock.TileBans.TileIsBanned(type, args.Player))
-			{
-				args.Player.SendTileSquare(x, y, 1);
-				args.Player.SendErrorMessage("You do not have permission to place this tile.");
-				args.Handled = true;
-				return;
-			}
-
 			if (!TShock.Utils.TilePlacementValid(x, y))
 			{
 				args.Player.SendTileSquare(x, y, 1);
@@ -1524,8 +1552,8 @@ namespace TShockAPI
 				return;
 			}
 
-			// This is neccessary to check in order to prevent special tiles such as 
-			// queen bee larva, paintings etc that use this packet from being placed 
+			// This is neccessary to check in order to prevent special tiles such as
+			// queen bee larva, paintings etc that use this packet from being placed
 			// without selecting the right item.
 			if (type != args.Player.TPlayer.inventory[args.Player.TPlayer.selectedItem].createTile)
 			{
@@ -1587,7 +1615,7 @@ namespace TShockAPI
 						args.Player.TilesCreated.Add(coords, Main.tile[x, y]);
 			}
 		}
-		
+
 		/// <summary>Fired when a PlaceTileEntity occurs for basic anti-cheat on perms and range.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1611,7 +1639,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Fired when an item frame is placed for anti-cheat detection.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1638,7 +1666,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		internal void OnPlayerPortalTeleport(object sender, GetDataHandlers.TeleportThroughPortalEventArgs args)
 		{
 			//Packet 96 (player teleport through portal) has no validation on whether or not the player id provided
@@ -1666,7 +1694,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Handles the anti-cheat components of gem lock toggles.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1696,7 +1724,7 @@ namespace TShockAPI
 				return;
 			}
 		}
-		
+
 		/// <summary>Handles validation of of basic anti-cheat on mass wire operations.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
@@ -1846,8 +1874,19 @@ namespace TShockAPI
 				}
 			}
 		}
-		
-		
+
+		/// <summary>Bouncer's SignEvent hook prevent the movement made to sign
+		/// </summary>
+		/// <param name="sender">The object that triggered the event.</param>
+		/// <param name="args">The packet arguments that the event has.</param>
+		internal void OnSignEvent(object sender, GetDataHandlers.SignEventArgs args)
+		{
+			if (Terraria.Sign.ReadSign(args.X, args.Y) != args.ID)
+			{
+				args.Handled = true;
+			}
+		}
+
 		private static Dictionary<byte, short> NPCAddBuffTimeMax = new Dictionary<byte, short>()
 		{
 			{ BuffID.Poisoned, 3600 },
@@ -1872,7 +1911,7 @@ namespace TShockAPI
 			{ BuffID.Confused, 360 }, // Brain of Confusion Internal Item ID: 3223
 			{ BuffID.Daybreak, 300 } // Solar Eruption Item ID: 3473, Daybreak Item ID: 3543
 		};
-		
+
 		/// <summary>
 		/// Tile IDs that can be oriented:
 		/// Cannon,

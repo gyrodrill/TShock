@@ -120,6 +120,7 @@ namespace TShockAPI
 					{ PacketTypes.LiquidSet, HandleLiquidSet },
 					{ PacketTypes.PlayerBuff, HandlePlayerBuffList },
 					{ PacketTypes.NpcSpecial, HandleSpecial },
+					{ PacketTypes.ChestUnlock, HandleUnlock },
 					{ PacketTypes.NpcAddBuff, HandleNPCAddBuff },
 					{ PacketTypes.PlayerAddBuff, HandlePlayerAddBuff },
 					{ PacketTypes.UpdateNPCHome, UpdateNPCHome },
@@ -215,7 +216,7 @@ namespace TShockAPI
 			PlayerInfo.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerSlot event
 		/// </summary>
@@ -264,7 +265,7 @@ namespace TShockAPI
 			PlayerSlot.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>The arguments to a GetSection packet.</summary>
 		public class GetSectionEventArgs : GetDataHandledEventArgs
 		{
@@ -292,7 +293,7 @@ namespace TShockAPI
 			GetSection.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerUpdate event
 		/// </summary>
@@ -344,7 +345,7 @@ namespace TShockAPI
 			PlayerUpdate.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerHP event
 		/// </summary>
@@ -383,7 +384,7 @@ namespace TShockAPI
 			PlayerHP.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// Used when a TileEdit event is called.
 		/// </summary>
@@ -442,7 +443,7 @@ namespace TShockAPI
 			TileEdit.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a SendTileSquare event
 		/// </summary>
@@ -484,7 +485,7 @@ namespace TShockAPI
 			SendTileSquare.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in an ItemDrop event
 		/// </summary>
@@ -544,7 +545,7 @@ namespace TShockAPI
 			ItemDrop.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a NewProjectile event
 		/// </summary>
@@ -608,7 +609,7 @@ namespace TShockAPI
 			NewProjectile.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use with a NPCStrike event
 		/// </summary>
@@ -657,7 +658,7 @@ namespace TShockAPI
 			NPCStrike.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>The arguments to the ProjectileKill packet.</summary>
 		public class ProjectileKillEventArgs : GetDataHandledEventArgs
 		{
@@ -694,7 +695,7 @@ namespace TShockAPI
 			ProjectileKill.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a TogglePvp event
 		/// </summary>
@@ -728,7 +729,7 @@ namespace TShockAPI
 			TogglePvp.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerSpawn event
 		/// </summary>
@@ -767,7 +768,7 @@ namespace TShockAPI
 			PlayerSpawn.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a ChestItemChange event
 		/// </summary>
@@ -816,7 +817,7 @@ namespace TShockAPI
 			ChestItemChange.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use with a ChestOpen event
 		/// </summary>
@@ -850,7 +851,7 @@ namespace TShockAPI
 			ChestOpen.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlaceChest event
 		/// </summary>
@@ -887,7 +888,7 @@ namespace TShockAPI
 			PlaceChest.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerZone event
 		/// </summary>
@@ -936,7 +937,7 @@ namespace TShockAPI
 			PlayerZone.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use with a PlayerAnimation event
 		/// </summary>
@@ -958,7 +959,7 @@ namespace TShockAPI
 			PlayerAnimation.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerMana event
 		/// </summary>
@@ -988,7 +989,7 @@ namespace TShockAPI
 			PlayerMana.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerTeam event
 		/// </summary>
@@ -1022,7 +1023,7 @@ namespace TShockAPI
 			PlayerTeam.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a Sign event
 		/// </summary>
@@ -1061,7 +1062,7 @@ namespace TShockAPI
 			Sign.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a LiquidSet event
 		/// </summary>
@@ -1105,7 +1106,7 @@ namespace TShockAPI
 			LiquidSet.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerBuffUpdate event
 		/// </summary>
@@ -1170,6 +1171,45 @@ namespace TShockAPI
 		}
 
 		/// <summary>
+		/// For use with a Unlock event
+		/// </summary>
+		public class UnlockEventArgs : GetDataHandledEventArgs
+		{
+			/// <summary>
+			/// Unlock type (chest or door)
+			/// </summary>
+			public byte Type { get; set; }
+			/// <summary>
+			/// X location of target
+			/// </summary>
+			public short X { get; set; }
+			/// <summary>
+			/// Y location of target
+			/// </summary>
+			public short Y { get; set; }
+		}
+		/// <summary>
+		/// Unlock - Called when chest/door unlock
+		/// </summary>
+		public static HandlerList<UnlockEventArgs> Unlock = new HandlerList<UnlockEventArgs>();
+		private static bool OnUnlock(TSPlayer player, MemoryStream data, byte type, short x, short y)
+		{
+			if (Unlock == null)
+				return false;
+
+			var args = new UnlockEventArgs
+			{
+				Player = player,
+				Data = data,
+				Type = type,
+				X = x,
+				Y = y
+			};
+			Unlock.Invoke(null, args);
+			return args.Handled;
+		}
+
+		/// <summary>
 		/// For use in a NPCAddBuff event
 		/// </summary>
 		public class NPCAddBuffEventArgs : GetDataHandledEventArgs
@@ -1207,7 +1247,7 @@ namespace TShockAPI
 			NPCAddBuff.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a PlayerBuff event
 		/// </summary>
@@ -1246,7 +1286,7 @@ namespace TShockAPI
 			PlayerBuff.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>
 		/// For use in a NPCHome event
 		/// </summary>
@@ -1488,7 +1528,7 @@ namespace TShockAPI
 			PlaceObject.Invoke(null, args);
 			return args.Handled;
 		}
-		
+
 		/// <summary>For use in a PlaceTileEntity event.</summary>
 		public class PlaceTileEntityEventArgs : GetDataHandledEventArgs
 		{
@@ -1784,7 +1824,7 @@ namespace TShockAPI
 		}
 
 		#endregion
-		
+
 		private static bool HandlePlayerInfo(GetDataHandlerArgs args)
 		{
 			byte playerid = args.Data.ReadInt8();
@@ -1987,7 +2027,7 @@ namespace TShockAPI
 			NetMessage.SendData((int)PacketTypes.WorldInfo, args.Player.Index);
 			return true;
 		}
-		
+
 		private static bool HandleGetSection(GetDataHandlerArgs args)
 		{
 			if (OnGetSection(args.Player, args.Data, args.Data.ReadInt32(), args.Data.ReadInt32()))
@@ -2003,7 +2043,7 @@ namespace TShockAPI
 			NetMessage.SendData((int)PacketTypes.TimeSet, -1, -1, NetworkText.Empty, Main.dayTime ? 1 : 0, (int)Main.time, Main.sunModY, Main.moonModY);
 			return false;
 		}
-		
+
 		private static bool HandleSpawn(GetDataHandlerArgs args)
 		{
 			var player = args.Data.ReadInt8();
@@ -2709,6 +2749,18 @@ namespace TShockAPI
 			return false;
 		}
 
+		private static bool HandleUnlock(GetDataHandlerArgs args)
+		{
+			var type = args.Data.ReadInt8();
+			var x = args.Data.ReadInt16();
+			var y = args.Data.ReadInt16();
+
+			if (OnUnlock(args.Player, args.Data, type, x, y))
+				return true;
+
+			return false;
+		}
+
 		private static bool HandleNPCAddBuff(GetDataHandlerArgs args)
 		{
 			var id = args.Data.ReadInt16();
@@ -3065,6 +3117,13 @@ namespace TShockAPI
 			if (OnPlaceObject(args.Player, args.Data, x, y, type, style, alternate, direction))
 				return true;
 
+			if (TShock.TileBans.TileIsBanned(type, args.Player))
+			{
+				args.Player.SendTileSquare(x, y, 1);
+				args.Player.SendErrorMessage("You do not have permission to place this tile.");
+				return true;
+			}
+
 			return false;
 		}
 
@@ -3113,7 +3172,7 @@ namespace TShockAPI
 
 			return false;
 		}
-		
+
 		private static bool HandleSyncExtraValue(GetDataHandlerArgs args)
 		{
 			var npcIndex = args.Data.ReadInt16();
@@ -3137,7 +3196,7 @@ namespace TShockAPI
 
 			return false;
 		}
-		
+
 		private static bool HandleKillPortal(GetDataHandlerArgs args)
 		{
 			short projectileIndex = args.Data.ReadInt16();
