@@ -547,10 +547,8 @@ namespace TShockAPI.DB
 			{
 					{"sha512", () => new SHA512Managed()},
 					{"sha256", () => new SHA256Managed()},
-					{"md5", () => MD5.Create()},
 					{"sha512-xp", () => SHA512.Create()},
 					{"sha256-xp", () => SHA256.Create()},
-					{"md5-xp", () => MD5.Create()},
 			};
 
 		/// <summary>
