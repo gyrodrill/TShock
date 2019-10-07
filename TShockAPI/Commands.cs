@@ -592,10 +592,6 @@ namespace TShockAPI
 			{
 				HelpText = "Replies to a PM sent to you."
 			});
-			add(new Command(Rests.RestPermissions.restmanage, ManageRest, "rest")
-			{
-				HelpText = "Manages the REST API."
-			});
 			add(new Command(Permissions.slap, Slap, "slap")
 			{
 				HelpText = "Slaps a player, dealing damage."
@@ -1917,59 +1913,6 @@ namespace TShockAPI
 			{
 				//swallow the exception
 				return;
-			}
-		}
-
-		private static void ManageRest(CommandArgs args)
-		{
-			string subCommand = "help";
-			if (args.Parameters.Count > 0)
-				subCommand = args.Parameters[0];
-
-			switch (subCommand.ToLower())
-			{
-				case "listusers":
-					{
-						int pageNumber;
-						if (!PaginationTools.TryParsePageNumber(args.Parameters, 1, args.Player, out pageNumber))
-							return;
-
-						Dictionary<string, int> restUsersTokens = new Dictionary<string, int>();
-						foreach (Rests.SecureRest.TokenData tokenData in TShock.RestApi.Tokens.Values)
-						{
-							if (restUsersTokens.ContainsKey(tokenData.Username))
-								restUsersTokens[tokenData.Username]++;
-							else
-								restUsersTokens.Add(tokenData.Username, 1);
-						}
-
-						List<string> restUsers = new List<string>(
-							restUsersTokens.Select(ut => string.Format("{0} ({1} tokens)", ut.Key, ut.Value)));
-
-						PaginationTools.SendPage(
-							args.Player, pageNumber, PaginationTools.BuildLinesFromTerms(restUsers), new PaginationTools.Settings
-							{
-								NothingToDisplayString = "There are currently no active REST users.",
-								HeaderFormat = "Active REST Users ({0}/{1}):",
-								FooterFormat = "Type {0}rest listusers {{0}} for more.".SFormat(Specifier)
-							}
-						);
-
-						break;
-					}
-				case "destroytokens":
-					{
-						TShock.RestApi.Tokens.Clear();
-						args.Player.SendSuccessMessage("All REST tokens have been destroyed.");
-						break;
-					}
-				default:
-					{
-						args.Player.SendInfoMessage("Available REST Sub-Commands:");
-						args.Player.SendMessage("listusers - Lists all REST users and their current active tokens.", Color.White);
-						args.Player.SendMessage("destroytokens - Destroys all current REST tokens.", Color.White);
-						break;
-					}
 			}
 		}
 
